@@ -25,3 +25,6 @@ session is a dict that stores data across requests. When validation succeeds, th
 https://flask.palletsprojects.com/en/1.1.x/tutorial/views/
 
 
+### `request` in `templates`
+The pattern {{ request.form['title'] or post['title'] }} is used to choose what data appears in the form. When the form hasn’t been submitted, the original post data appears, but if invalid form data was posted you want to display that so the user can fix the error, so request.form is used instead. request is another variable that’s automatically available in templates.
+https://flask.palletsprojects.com/en/1.1.x/tutorial/blog/

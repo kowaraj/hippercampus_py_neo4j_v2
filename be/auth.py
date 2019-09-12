@@ -53,7 +53,9 @@ def login():
 
         if error is None:
             session.clear()
-            session['user_id'] = user['id']
+            session['user_id'] = user.id
+            print("session = " + str(session))
+            print("user    = " + str(user))
             return redirect(url_for('index'))
 
         flash(error)
@@ -63,11 +65,29 @@ def login():
 
 @bp.before_app_request
 def load_logged_in_user():
+    print(">session = " + str(session))
     user_id = session.get('user_id')
 
     if user_id is None:
         g.user = None
     else:
-        g.user = bedb.get_user_by_id()
+        g.user = bedb.get_user_by_id(user_id)
+        print(">user    = " + str(g.user))
+
+
+@bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
 
 

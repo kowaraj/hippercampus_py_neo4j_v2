@@ -45,6 +45,10 @@ class DB(object):
         u = session.write_transaction(__tx_add_user, username, password_hash)
         print("add_user: result " + str(u))
     
+    def get_posts(self):
+        return []
+
+
 
 
 
@@ -85,8 +89,8 @@ def init_app(app):
     app.cli.add_command(init_db_command)
 
 
-def get_user_by_id():
-    return None
+def get_user_by_id(user_id):
+    return {'id': 20, 'username': 'fakeusername'}
 
 
     

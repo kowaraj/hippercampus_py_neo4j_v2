@@ -1,0 +1,4 @@
+include be/run.sh
+graft be/static
+graft be/templates
+global-exclude *.pyc
