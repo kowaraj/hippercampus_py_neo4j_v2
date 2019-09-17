@@ -41,6 +41,7 @@ def login():
         db = bedb.get_db()
         error = None
         user = db.get_user(username).get('u')
+        print("login: user = " + str(user))
         # print("user.keys ==== " + str(user.get('u').id))
         # print("user.keys ==== " + str(user.get('u').labels))
         # print("user.keys ==== " + str(user.get('u')['password']))
@@ -71,8 +72,10 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = bedb.get_user_by_id(user_id)
+        db = bedb.get_db()
+        g.user = db.get_user_by_id(user_id).get('n')
         print(">user    = " + str(g.user))
+
 
 
 @bp.route('/logout')

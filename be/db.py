@@ -35,6 +35,18 @@ class DB(object):
         print("get_user: return [" + str(u) + "]")
         return u
 
+    def get_user_by_id(self, id):
+
+        def __tx_get_user_by_id(tx, id):
+            print("tx_get_user_by_id: "+ str(id))
+            return tx.run("MATCH (n) WHERE ID(n) = $id RETURN n", id = id).single()
+
+        print("get_user_by_id: " + str(id))
+        session = self.get_driver().session()
+        u = session.read_transaction(__tx_get_user_by_id, id)
+        print("get_user_by_id: return [" + str(u) + "]")
+        return u
+
     def add_user(self, username, password_hash):
 
         def __tx_add_user(tx, username, password_hash):
@@ -47,10 +59,6 @@ class DB(object):
     
     def get_posts(self):
         return []
-
-
-
-
 
 # Let's call the driver a 'db'
 def get_db():
