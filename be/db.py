@@ -57,8 +57,47 @@ class DB(object):
         u = session.write_transaction(__tx_add_user, username, password_hash)
         print("add_user: result " + str(u))
     
+    def get_post(self, id):
+        def __tx_get_post(tx, id):
+            return tx.run("MATCH (p:Post) WHERE ID(p) = $id RETURN p", id = id).single()
+        print("get_post: " + str(id))
+        session = self.get_driver().session()
+        u = session.read_transaction(__tx_get_post, id)
+        print("get_post: result " + str(u))
+
     def get_posts(self):
-        return []
+        def __tx_get_posts(tx):
+            return tx.run("MATCH (p:Post) RETURN p").value()
+
+        print("get_posts: ALL")
+        session = self.get_driver().session()
+        ps = session.read_transaction(__tx_get_posts)
+        print("get_posts: ps = " + str(ps))
+        psx = [{'id': p.id, 'author_id':p['author_id'], 'title': p['title'], 'body':p['body'], 'created':p['created']} for p in ps]
+        print("get_posts: psx = " + str(psx))
+        return psx
+
+    def get_posts_by_user(self, id):
+        def __tx_get_posts_by_user(tx, author_id):
+            return tx.run("MATCH (p:Post) WHERE p.author_id = $id RETURN p", id = id).value()
+
+        print("get_posts_by_user: " + str(id))
+        session = self.get_driver().session()
+        ps = session.read_transaction(__tx_get_posts_by_user, id)
+        print("get_posts_by_user: ps = " + str(ps))
+        psx = [{'id': p.id, 'author_id':p['author_id'], 'title': p['title'], 'body':p['body'], 'created':p['created']} for p in ps]
+        print("get_posts: psx = " + str(psx))
+        return psx
+
+    def add_post(self, title, body, user_id):
+        def __tx_add_post(tx, t, b, user_id):
+            return tx.run("CREATE (p:Post {title:$title, body:$body, author_id:$author_id, created:$ts}) RETURN p", title=title, body=body, author_id=user_id, ts=666)
+        print("add_post: " + title)
+        session = self.get_driver().session()
+        u = session.write_transaction(__tx_add_post, title, body, user_id)
+        print("add_post: result " + str(u))
+
+
 
 # Let's call the driver a 'db'
 def get_db():
@@ -97,8 +136,7 @@ def init_app(app):
     app.cli.add_command(init_db_command)
 
 
-def get_user_by_id(user_id):
-    return {'id': 20, 'username': 'fakeusername'}
+
 
 
     

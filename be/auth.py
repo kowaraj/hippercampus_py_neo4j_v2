@@ -67,6 +67,7 @@ def login():
 @bp.before_app_request
 def load_logged_in_user():
     print(">session = " + str(session))
+    print(">g       = " + str(g))
     user_id = session.get('user_id')
 
     if user_id is None:
@@ -74,6 +75,7 @@ def load_logged_in_user():
     else:
         db = bedb.get_db()
         g.user = db.get_user_by_id(user_id).get('n')
+        print(">type(user) = " + str(type(g.user)))
         print(">user    = " + str(g.user))
 
 

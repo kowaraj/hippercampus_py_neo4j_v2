@@ -1,17 +1,18 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, session
 )
 from werkzeug.exceptions import abort
-
 from be.auth import login_required
-from be.db import get_db
+import be.db as bedb
 
 bp = Blueprint('blog', __name__)
 
 @bp.route('/')
 def index():
-    db = get_db()
-    posts = db.get_posts()
+    db = bedb.get_db()
+#    posts = db.get_posts()
+    user_id = session.get('user_id')
+    posts = db.get_posts_by_user(user_id)
     return render_template('blog/index.html', posts=posts)
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -28,42 +29,17 @@ def create():
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO post (title, body, author_id)'
-                ' VALUES (?, ?, ?)',
-                (title, body, g.user['id'])
-            )
-            db.commit()
+            db = bedb.get_db()
+            user_id = session.get('user_id')
+            print("create a post: " + str(user_id))
+            db.add_post(title, body, user_id)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/create.html')
 
 def get_post(id, check_author=True):
-    post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = ?',
-        (id,)
-    ).fetchone()
-
-    if post is None:
-        abort(404, "Post id {0} doesn't exist.".format(id))
-
-    if check_author and post['author_id'] != g.user['id']:
-        abort(403)
-
-    return post
-
-
-def get_post(id, check_author=True):
-    post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = ?',
-        (id,)
-    ).fetchone()
-
+    db = bedb.get_db()
+    post = db.get_post(id)
     if post is None:
         abort(404, "Post id {0} doesn't exist.".format(id))
 
