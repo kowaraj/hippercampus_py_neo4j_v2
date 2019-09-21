@@ -15,6 +15,41 @@ def index():
     posts = db.get_posts_by_user(user_id)
     return render_template('blog/index.html', posts=posts)
 
+@bp.route('/upload', methods=('GET', 'POST'))
+def upload():
+
+    print(request.files)
+    f = request.files.get('sampleFile')
+    f.save('./uploads/'+ f.filename)
+
+    print(f)
+    tags = str(request.form)
+    print("TAGS = " + tags)
+    print("ARGS = " + str(request.args))
+    if request.method == 'POST':
+        return "upload POST"
+    else:
+        return "upload GET"
+
+@bp.route('/creatememe', methods=('GET', 'POST'))
+def meme_create():
+    f = request.files.get('sampleFile')
+    f.save('./uploads/'+ f.filename)
+
+    meme_file = f.filename
+    meme_name = request.form['name']
+    meme_tags = request.form['tags']    
+
+    print("TAGS = " + str(meme_tags))
+    print("NAME = " + str(meme_name))
+    print("FILE = " + str(meme_file))
+    return redirect(request.referrer) 
+
+    # if request.method == 'POST':
+    #     return "upload POST"
+    # else:
+    #     return "upload GET"
+
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():

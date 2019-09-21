@@ -33,6 +33,24 @@ def register():
 
     return render_template('auth/register.html')
 
+@bp.route('/upload', methods=('GET', 'POST'))
+def upload():
+    print("REQUEST for UPLOAD ")
+    return redirect(url_for('auth.login'))
+
+    print(request.files)
+    f = request.files.get('sampleFile')
+    f.save('./uploads/'+ f.filename)
+
+    print(f)
+    tags = request.form.get('tags')
+    print(tags)    
+    print(request.args)
+    if request.method == 'POST':
+        return "upload POST"
+    else:
+        return "upload GET"
+
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
@@ -77,6 +95,7 @@ def load_logged_in_user():
         g.user = db.get_user_by_id(user_id).get('n')
         print(">type(user) = " + str(type(g.user)))
         print(">user    = " + str(g.user))
+
 
 
 

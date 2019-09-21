@@ -5,6 +5,6 @@
 
 export FLASK_APP=be
 export FLASK_ENV=development
-flask run
+flask run  --host localhost --port 3003
 
 
