@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, send_from_directory
 )
 from werkzeug.exceptions import abort
 from be.auth import login_required
@@ -10,7 +10,6 @@ bp = Blueprint('blog', __name__)
 @bp.route('/')
 def index():
     db = bedb.get_db()
-#    posts = db.get_posts()
     user_id = session.get('user_id')
     posts = db.get_posts_by_user(user_id)
     return render_template('blog/index.html', posts=posts)
@@ -31,24 +30,57 @@ def upload():
     else:
         return "upload GET"
 
+# TODO: Clean up this messsss! Find a better way to GET a 'static' file
+@bp.route('/uploads/<fn>', methods=['GET'])
+def uploads(fn):
+    print('GET a file from ./static/ with filename = ' + str(fn))
+    return send_from_directory('./static/', fn, as_attachment=True)
+
+
 @bp.route('/creatememe', methods=('GET', 'POST'))
 def meme_create():
     f = request.files.get('sampleFile')
     f.save('./uploads/'+ f.filename)
 
     meme_file = f.filename
-    meme_name = request.form['name']
-    meme_tags = request.form['tags']    
+    meme_name = str(request.form['name'])
+    meme_tags = str(request.form['tags'])
 
-    print("TAGS = " + str(meme_tags))
-    print("NAME = " + str(meme_name))
-    print("FILE = " + str(meme_file))
+    print("TAGS = " + meme_tags)
+    print("NAME = " + meme_name)
+    print("FILE = " + meme_file)
+
+    db = bedb.get_db()
+    db.add_meme(meme_name, meme_tags, meme_file)
     return redirect(request.referrer) 
 
-    # if request.method == 'POST':
-    #     return "upload POST"
-    # else:
-    #     return "upload GET"
+@bp.route('/getmemes', methods=['GET'])
+def meme_get_all():
+
+    db = bedb.get_db()
+    db.get_memes()
+
+    # return render_template('blog/index.html', memes=memes)
+
+    return '[ \
+            { \
+                "id": 1, \
+                "fn": "ss_0.png", \
+                "tags": [ "mind", "body"] },\
+            { \
+                "id": 2, \
+                "fn": "ss_1.png", \
+                "tags": [ "mind", "body"] },\
+            { \
+                "id": 3, \
+                "fn": "ss_6.png", \
+                "tags": [ "mind", "body"] },\
+            { \
+                "id": 4, \
+                "fn": "ss_7.png", \
+                "tags": [ "body"] }\
+            ]'
+
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required

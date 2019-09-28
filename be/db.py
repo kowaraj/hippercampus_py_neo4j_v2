@@ -97,8 +97,19 @@ class DB(object):
         u = session.write_transaction(__tx_add_post, title, body, user_id)
         print("add_post: result " + str(u))
 
+    def add_meme(self, name, tags, file):
 
+        def __tx_add_meme(tx, name, tags, file):
+            return tx.run("CREATE (n:Meme {name:$name, tags:$tags, file:$file} ) RETURN n.name", name=name, tags=tags, file=file)
 
+        print("add_meme: " + name)
+        session = self.get_driver().session()
+        u = session.write_transaction(__tx_add_meme, name, tags, file)
+        print("add_meme: result " + str(u))
+
+    def get_memes(self):
+        pass
+    
 # Let's call the driver a 'db'
 def get_db():
     if 'db' not in g:
