@@ -16,6 +16,8 @@ flask run
 ```
 
 
+# Standard Context in Templates
+https://flask.palletsprojects.com/en/1.1.x/templating/
 
 # Info
 

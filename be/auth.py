@@ -77,11 +77,8 @@ def load_logged_in_user():
     else:
         db = bedb.get_db()
         g.user = db.get_user_by_id(user_id).get('n')
-        print(">type(user) = " + str(type(g.user)))
-        print(">user    = " + str(g.user))
-
-
-
+        # print(">type(user) = " + str(type(g.user)))
+        # print(">user    = " + str(g.user))
 
 @bp.route('/logout')
 def logout():

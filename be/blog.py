@@ -4,6 +4,7 @@ from flask import (
 from werkzeug.exceptions import abort
 from be.auth import login_required
 import be.db as bedb
+import json
 
 bp = Blueprint('blog', __name__)
 
@@ -58,28 +59,28 @@ def meme_create():
 def meme_get_all():
 
     db = bedb.get_db()
-    db.get_memes()
+    ms = db.get_memes()
+    ret = []
+    for m in ms:
+        m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
+        ret.append(json.dumps(m_dict))
+        # print(m)
+        # print(m['name'])
+        # print(m['tags'])
+        # print(str(m.id))
 
-    # return render_template('blog/index.html', memes=memes)
-
-    return '[ \
-            { \
-                "id": 1, \
-                "fn": "ss_0.png", \
-                "tags": [ "mind", "body"] },\
-            { \
-                "id": 2, \
-                "fn": "ss_1.png", \
-                "tags": [ "mind", "body"] },\
-            { \
-                "id": 3, \
-                "fn": "ss_6.png", \
-                "tags": [ "mind", "body"] },\
-            { \
-                "id": 4, \
-                "fn": "ss_7.png", \
-                "tags": [ "body"] }\
+    ret_x =  '[ \
+            { "id": 1, "name": "ss0", "fn": "ss_0.png", "tags": [ "mind", "body"] }, \
+            { "id": 2, "name": "ss1", "fn": "ss_1.png", "tags": [ "mind", "body"] }, \
+            { "id": 3, "name": "ss6", "fn": "ss_6.png", "tags": [ "mind", "body"] }, \
+            { "id": 4, "name": "ss7", "fn": "ss_7.png", "tags": [ "body"] } \
             ]'
+
+    ret_str = ','.join(ret)
+    print("RETX ===" + str(ret_x))
+    print("RET ====" + str(ret))
+    print("RETS====" + str(ret_str))
+    return '['+ret_str+']'
 
 
 @bp.route('/create', methods=('GET', 'POST'))

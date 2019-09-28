@@ -25,26 +25,26 @@ class DB(object):
     def get_user(self, username):
 
         def __tx_get_user(tx, username):
-            print("tx_get_user: "+ username)
+            # print("tx_get_user: "+ username)
             return tx.run("MATCH (u:User) WHERE u.username = $name RETURN u", name = username).single()
 
 
-        print("get_user: " + username)
+        # print("get_user: " + username)
         session = self.get_driver().session()
         u = session.read_transaction(__tx_get_user, username)
-        print("get_user: return [" + str(u) + "]")
+        # print("get_user: return [" + str(u) + "]")
         return u
 
     def get_user_by_id(self, id):
 
         def __tx_get_user_by_id(tx, id):
-            print("tx_get_user_by_id: "+ str(id))
+            # print("tx_get_user_by_id: "+ str(id))
             return tx.run("MATCH (n) WHERE ID(n) = $id RETURN n", id = id).single()
 
-        print("get_user_by_id: " + str(id))
+        # print("get_user_by_id: " + str(id))
         session = self.get_driver().session()
         u = session.read_transaction(__tx_get_user_by_id, id)
-        print("get_user_by_id: return [" + str(u) + "]")
+        # print("get_user_by_id: return [" + str(u) + "]")
         return u
 
     def add_user(self, username, password_hash):
@@ -52,10 +52,10 @@ class DB(object):
         def __tx_add_user(tx, username, password_hash):
             return tx.run("CREATE (u:User {username:$username, password:$password}) RETURN u.username", username=username, password=password_hash)
 
-        print("add_user: " + username)
+        # print("add_user: " + username)
         session = self.get_driver().session()
         u = session.write_transaction(__tx_add_user, username, password_hash)
-        print("add_user: result " + str(u))
+        # print("add_user: result " + str(u))
     
     def get_post(self, id):
         def __tx_get_post(tx, id):
@@ -107,9 +107,26 @@ class DB(object):
         u = session.write_transaction(__tx_add_meme, name, tags, file)
         print("add_meme: result " + str(u))
 
-    def get_memes(self):
-        pass
-    
+    def get_user(self, username):
+
+        def __tx_get_user(tx, username):
+            print("tx_get_user: "+ username)
+            return tx.run("MATCH (u:User) WHERE u.username = $name RETURN u", name = username).single()
+
+
+        print("get_user: " + username)
+        session = self.get_driver().session()
+        u = session.read_transaction(__tx_get_user, username)
+        print("get_user: return [" + str(u) + "]")
+        return u
+        
+    def get_memes(self, props=None):
+        session = self.get_driver().session()
+        ret = session.run("MATCH (m:Meme) RETURN m").value()
+        print('RET === ' + str(ret))
+        return ret
+
+
 # Let's call the driver a 'db'
 def get_db():
     if 'db' not in g:
