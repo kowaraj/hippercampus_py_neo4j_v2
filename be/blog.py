@@ -66,6 +66,19 @@ def meme_get_all():
     ret_str = ','.join(ret)
     return '['+ret_str+']'
 
+@bp.route('/getmeme/<meme>', methods=['GET'])
+def meme_get(meme):
+    print("!!! ")
+    print(meme)
+    db = bedb.get_db()
+    ms = db.get_meme(meme)
+    print(str(ms))
+    ret = []
+    for m in ms:
+        m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
+        ret.append(json.dumps(m_dict))
+    ret_str = ','.join(ret)
+    return '['+ret_str+']'
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required

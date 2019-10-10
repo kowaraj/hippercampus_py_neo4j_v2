@@ -126,6 +126,14 @@ class DB(object):
         print('RET === ' + str(ret))
         return ret
 
+    def get_meme(self, meme):
+        session = self.get_driver().session()
+        print("???")
+        print('requested meme = ' + meme)
+        ret = session.run("MATCH (m:Meme) WHERE m.name = $name RETURN m", name=meme).value()
+        print('RET === ' + str(ret))
+        return ret
+
 
 # Let's call the driver a 'db'
 def get_db():
