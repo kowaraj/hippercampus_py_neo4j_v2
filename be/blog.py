@@ -57,29 +57,13 @@ def meme_create():
 
 @bp.route('/getmemes', methods=['GET'])
 def meme_get_all():
-
     db = bedb.get_db()
     ms = db.get_memes()
     ret = []
     for m in ms:
         m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
-        # print(m)
-        # print(m['name'])
-        # print(m['tags'])
-        # print(str(m.id))
-
-    ret_x =  '[ \
-            { "id": 1, "name": "ss0", "fn": "ss_0.png", "tags": [ "mind", "body"] }, \
-            { "id": 2, "name": "ss1", "fn": "ss_1.png", "tags": [ "mind", "body"] }, \
-            { "id": 3, "name": "ss6", "fn": "ss_6.png", "tags": [ "mind", "body"] }, \
-            { "id": 4, "name": "ss7", "fn": "ss_7.png", "tags": [ "body"] } \
-            ]'
-
     ret_str = ','.join(ret)
-    print("RETX ===" + str(ret_x))
-    print("RET ====" + str(ret))
-    print("RETS====" + str(ret_str))
     return '['+ret_str+']'
 
 
