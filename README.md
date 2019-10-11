@@ -1,3 +1,5 @@
+- Frontend (localhost:3002), find here `https://github.com/kowaraj/hippercampus`
+- Backend (localhost:3003), the current project (`https://github.com/kowaraj/hippercampus_py_neo4j_v2`)
 
 # To install 
 
@@ -6,7 +8,9 @@ pip3 install flask
 pip3 install neo4j
 ```
 
-# To run 
+# To run
+
+Run with `bash run.sh`
 
 ```
 #!/bin/bash

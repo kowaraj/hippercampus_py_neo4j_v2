@@ -64,6 +64,7 @@ def meme_get_all():
         m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
     ret_str = ','.join(ret)
+    print(ret_str)
     return '['+ret_str+']'
 
 @bp.route('/getmeme/<meme>', methods=['GET'])
@@ -78,6 +79,7 @@ def meme_get(meme):
         m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
     ret_str = ','.join(ret)
+    print(ret_str)
     return '['+ret_str+']'
 
 @bp.route('/create', methods=('GET', 'POST'))
