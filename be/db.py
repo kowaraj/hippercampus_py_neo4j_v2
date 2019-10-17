@@ -3,13 +3,10 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 from neo4j import GraphDatabase
 
-
-
 def create_uniqueness_constraint(tx, label, property):
     query = "CREATE CONSTRAINT ON (n:{label}) ASSERT n.{property} IS UNIQUE"
     query = query.format(label=label, property=property)
     tx.run(query)
-
 
 class DB(object): 
     def __init__(self):
@@ -21,30 +18,22 @@ class DB(object):
     def get_driver(self):
         return self.driver
         
-
     def get_user(self, username):
 
         def __tx_get_user(tx, username):
-            # print("tx_get_user: "+ username)
             return tx.run("MATCH (u:User) WHERE u.username = $name RETURN u", name = username).single()
 
-
-        # print("get_user: " + username)
         session = self.get_driver().session()
         u = session.read_transaction(__tx_get_user, username)
-        # print("get_user: return [" + str(u) + "]")
         return u
 
     def get_user_by_id(self, id):
 
         def __tx_get_user_by_id(tx, id):
-            # print("tx_get_user_by_id: "+ str(id))
             return tx.run("MATCH (n) WHERE ID(n) = $id RETURN n", id = id).single()
 
-        # print("get_user_by_id: " + str(id))
         session = self.get_driver().session()
         u = session.read_transaction(__tx_get_user_by_id, id)
-        # print("get_user_by_id: return [" + str(u) + "]")
         return u
 
     def add_user(self, username, password_hash):
@@ -113,7 +102,6 @@ class DB(object):
             print("tx_get_user: "+ username)
             return tx.run("MATCH (u:User) WHERE u.username = $name RETURN u", name = username).single()
 
-
         print("get_user: " + username)
         session = self.get_driver().session()
         u = session.read_transaction(__tx_get_user, username)
@@ -128,22 +116,26 @@ class DB(object):
 
     def get_meme(self, meme):
         session = self.get_driver().session()
-        print("???")
-        print('requested meme = ' + meme)
+        print('-> requested meme: meme = ' + meme)
         ret = session.run("MATCH (m:Meme) WHERE m.name = $name RETURN m", name=meme).value()
-        print('RET === ' + str(ret))
+        print('-> requested meme: returns = ' + str(ret))
         return ret
 
 
 # Let's call the driver a 'db'
 def get_db():
-    if 'db' not in g:
-        print("Connecting to a DB...")
-        g.db = DB()
+    print("get_db: ")
 
+    if 'db' not in g:        
+        print("---------------> connecting to DB:")
+        g.db = DB()
+        print("---------------> connecting to DB: done")
+
+    print("get_db: done")
     return g.db
 
 def close_db(e=None):
+    print("---> close_db: !")
     db = g.pop('driver', None)
 
     if db is not None:
@@ -151,25 +143,27 @@ def close_db(e=None):
     else:
         print("db is None. Nothing else to be done.")
 
+    print("---> close_db: done")
+
 def init_driver():
     d = get_db()
-
-    # with current_app.open_resource('schema.sql') as f:
-    #     db.executescript(f.read().decode('utf8'))
-
 
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
+    print("---> init_db_command: !")
     """Clear the existing data and create new tables."""
     init_driver()
     click.echo('Initialized the database.')
+    print("---> init_db_command: done")
 
 
 
 def init_app(app):
-    app.teardown_appcontext(close_db)
+    print("-----> init_app: !")
+    #app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    print("-----> init_app: done")
 
 
 
