@@ -10,15 +10,17 @@ pip3 install neo4j
 
 # To run
 
-Run with `bash run.sh`
-
+1. Activate the environment
+```
+[~/src/hippercampus_py_neo4j_v2 ] . venv/bin/activate
+```
+2. Run with `bash run.sh`
 ```
 #!/bin/bash
 export FLASK_APP=be
 export FLASK_ENV=development
 flask run
 ```
-
 
 # Standard Context in Templates
 https://flask.palletsprojects.com/en/1.1.x/templating/
