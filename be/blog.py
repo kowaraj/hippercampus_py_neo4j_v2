@@ -41,18 +41,21 @@ def uploads(fn):
 @bp.route('/creatememe', methods=('GET', 'POST'))
 def meme_create():
     f = request.files.get('sampleFile')
-    f.save('./uploads/'+ f.filename)
+    if f.filename != '':
+        f.save('./uploads/'+ f.filename)
 
     meme_file = f.filename
     meme_name = str(request.form['name'])
     meme_tags = str(request.form['tags'])
+    meme_text = str(request.form['text'])
 
     print("TAGS = " + meme_tags)
     print("NAME = " + meme_name)
     print("FILE = " + meme_file)
+    print("TEXT = " + meme_text)
 
     db = bedb.get_db()
-    db.add_meme(meme_name, meme_tags, meme_file)
+    db.add_meme(meme_name, meme_tags, meme_file, meme_text)
     return redirect(request.referrer) 
 
 @bp.route('/getmemes', methods=['GET'])
@@ -76,7 +79,7 @@ def meme_get(meme):
     print(str(ms))
     ret = []
     for m in ms:
-        m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
+        m_dict = {'id': m.id, 'name':m['name'], 'text':m['text'], 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
     ret_str = ','.join(ret)
     print(ret_str)

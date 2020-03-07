@@ -5,6 +5,6 @@
 
 export FLASK_APP=be
 export FLASK_ENV=development
-flask run  --host localhost --port 4000
+flask run  --host localhost --port 4666
 
 

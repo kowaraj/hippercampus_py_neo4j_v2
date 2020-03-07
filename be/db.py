@@ -86,14 +86,14 @@ class DB(object):
         u = session.write_transaction(__tx_add_post, title, body, user_id)
         print("add_post: result " + str(u))
 
-    def add_meme(self, name, tags, file):
+    def add_meme(self, name, tags, file, text):
 
-        def __tx_add_meme(tx, name, tags, file):
-            return tx.run("CREATE (n:Meme {name:$name, tags:$tags, file:$file} ) RETURN n.name", name=name, tags=tags, file=file)
+        def __tx_add_meme(tx, name, tags, file, text):
+            return tx.run("CREATE (n:Meme {name:$name, tags:$tags, file:$file, text:$text} ) RETURN n.name", name=name, tags=tags, file=file, text=text)
 
         print("add_meme: " + name)
         session = self.get_driver().session()
-        u = session.write_transaction(__tx_add_meme, name, tags, file)
+        u = session.write_transaction(__tx_add_meme, name, tags, file, text)
         print("add_meme: result " + str(u))
 
     def get_user(self, username):
