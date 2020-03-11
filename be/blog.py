@@ -1,3 +1,4 @@
+import random 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, send_from_directory
 )
@@ -64,14 +65,16 @@ def meme_get_all():
     ms = db.get_memes()
     ret = []
     for m in ms:
-        m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
+        # m_dict = {'id': m.id, 'name':m['name'], 'fn':m['file'], 'tags':m['tags'].split(',')}
+        # ret.append(json.dumps(m_dict))
+        m_dict = {'id': m.id, 'name':m['name'], 'text': m['text'] if m['text'] else '', 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
     ret_str = ','.join(ret)
     print(ret_str)
     return '['+ret_str+']'
 
-@bp.route('/getmeme/<meme>', methods=['GET'])
-def meme_get(meme):
+    
+def get_a_meme(meme):
     print("!!! ")
     print(meme)
     db = bedb.get_db()
@@ -79,11 +82,30 @@ def meme_get(meme):
     print(str(ms))
     ret = []
     for m in ms:
-        m_dict = {'id': m.id, 'name':m['name'], 'text':m['text'], 'fn':m['file'], 'tags':m['tags'].split(',')}
+#        m_dict = {'id': m.id, 'name':m['name'], 'text':m['text'], 'fn':m['file'], 'tags':m['tags'].split(',')}
+        m_dict = {'id': m.id, 'name':m['name'],  'text': m['text'] if m['text'] else '', 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
     ret_str = ','.join(ret)
     print(ret_str)
     return '['+ret_str+']'
+
+@bp.route('/getmeme/<meme>', methods=['GET'])
+def meme_get(meme):
+    return get_a_meme(meme)
+
+@bp.route('/getmeme/', methods=['GET'])
+def meme_get_random():
+    db = bedb.get_db()
+    ms = db.get_memes()
+    k_random = random.randint(1,len(ms))-1
+    print(k_random)
+    m = ms[k_random]
+    m_name = m['name']
+    print(m_name)
+    # return '[{"id": 66666, "name": "random", "text": "lskdkfieow", "fn": "", "tags": ["t1", "t3"]}]'
+
+    return get_a_meme(m_name)
+
 
 # @bp.route('/create', methods=('GET', 'POST'))
 # @login_required
