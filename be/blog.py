@@ -91,9 +91,10 @@ def get_a_meme(meme):
 
 @bp.route('/getmeme/<meme>', methods=['GET'])
 def meme_get(meme):
+    print("-----------> meme_get: ", meme)
     return get_a_meme(meme)
 
-@bp.route('/getmeme/', methods=['GET'])
+@bp.route('/getmemerandom/', methods=['GET'])
 def meme_get_random():
     db = bedb.get_db()
     ms = db.get_memes()
