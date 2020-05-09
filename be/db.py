@@ -111,27 +111,27 @@ class DB(object):
     def get_memes(self, props=None):
         session = self.get_driver().session()
         ret = session.run("MATCH (m:Meme) RETURN m").value()
-        print('RET === ' + str(ret))
+        #print('RET === ' + str(ret))
         return ret
 
     def get_meme(self, meme):
         session = self.get_driver().session()
-        print('-> requested meme: meme = ' + meme)
+        #print('-> requested meme: meme = ' + meme)
         ret = session.run("MATCH (m:Meme) WHERE m.name = $name RETURN m", name=meme).value()
-        print('-> requested meme: returns = ' + str(ret))
+        #print('-> requested meme: returns = ' + str(ret))
         return ret
 
 
 # Let's call the driver a 'db'
 def get_db():
-    print("get_db: ")
+    # print("get_db: ")
 
     if 'db' not in g:        
-        print("---------------> connecting to DB:")
+        # print("---------------> connecting to DB:")
         g.db = DB()
-        print("---------------> connecting to DB: done")
+        # print("---------------> connecting to DB: done")
 
-    print("get_db: done")
+    # print("get_db: done")
     return g.db
 
 def close_db(e=None):

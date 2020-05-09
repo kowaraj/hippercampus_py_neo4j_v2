@@ -1,6 +1,6 @@
 import random 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session, send_from_directory
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, send_from_directory, make_response
 )
 from werkzeug.exceptions import abort
 # from be.auth import login_required
@@ -36,7 +36,16 @@ def upload():
 @bp.route('/uploads/<fn>', methods=['GET'])
 def uploads(fn):
     print('GET a file from ./static/ with filename = ' + str(fn))
-    return send_from_directory('./static/', fn, as_attachment=True)
+    # return send_from_directory('./static/', fn, as_attachment=True)
+
+    resp = make_response(send_from_directory('./static/', fn, as_attachment=True))
+    print(resp)
+    resp.headers["Access-Control-Allow-Origin"] =  "http://localhost:3666"
+    resp.headers["Access-Control-Allow-Credentials"] =  "true"
+    for x in resp.headers:
+        print('header: ', x)
+    return resp
+
 
 
 @bp.route('/creatememe', methods=('GET', 'POST'))
@@ -70,28 +79,32 @@ def meme_get_all():
         m_dict = {'id': m.id, 'name':m['name'], 'text': m['text'] if m['text'] else '', 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
     ret_str = ','.join(ret)
-    print(ret_str)
+    #print(ret_str)
     return '['+ret_str+']'
 
     
 def get_a_meme(meme):
-    print("!!! ")
-    print(meme)
+    print("-----------> meme_get: ", meme)
     db = bedb.get_db()
     ms = db.get_meme(meme)
-    print(str(ms))
+    #print(str(ms))
     ret = []
     for m in ms:
 #        m_dict = {'id': m.id, 'name':m['name'], 'text':m['text'], 'fn':m['file'], 'tags':m['tags'].split(',')}
         m_dict = {'id': m.id, 'name':m['name'],  'text': m['text'] if m['text'] else '', 'fn':m['file'], 'tags':m['tags'].split(',')}
         ret.append(json.dumps(m_dict))
     ret_str = ','.join(ret)
-    print(ret_str)
-    return '['+ret_str+']'
+    #print(ret_str)
+    
+    # return '['+ret_str+']'
+    resp = make_response('['+ret_str+']')
+    print(resp)
+    for x in resp.headers:
+        print('header: ', x)
+    return resp
 
 @bp.route('/getmeme/<meme>', methods=['GET'])
 def meme_get(meme):
-    print("-----------> meme_get: ", meme)
     return get_a_meme(meme)
 
 @bp.route('/getmemerandom/', methods=['GET'])

@@ -5,10 +5,25 @@ from flask_cors import CORS
 
 
 def create_app(test_config=None):
-    print("----------------> create app")
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    cors = CORS(app, resources={r"/getmemes*": {"origins": "*"}})
+    # cors = CORS(app, resources={
+    #     r"/getmemes*": {"origins": "*"}, 
+    #     r"/uploads*": {"origins": "*"}
+    #     })
+    # cors = CORS(app, resources={
+    #     r"/uploads/*": {"origins": "*"},
+    #     r"/getmemes*": {"origins": "*"}, 
+    #     r"/getmeme/*": {"origins": "*"}, 
+    #     })
+
+    cors = CORS(app, resources={
+        r"/uploads/*": {"Access-Control-Allow-Origin": "http://localhost:3666"},
+        r"/getmemes*": {"origins": "*"}, 
+        r"/getmeme/*": {"origins": "*"}
+        })
+
+
 
     app.config.from_mapping(
         SECRET_KEY='dev',
